@@ -1,0 +1,76 @@
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 40px;
+    background-color: #F6F7F8;
+    color: #333;
+}
+
+h1, h2 {
+    color: #2C3E50;
+    margin-bottom: 20px;
+}
+
+input[type="text"] {
+    padding: 10px;
+    width: 100%;
+    max-width: 500px;
+    border: 1px solid #BDC3C7;
+    border-radius: 5px;
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+
+#autocomplete-results {
+    position: absolute;
+    width: calc(100% - 22px);  /* subtracting the padding */
+    max-width: 500px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    z-index: 10;
+    background-color: white;
+}
+
+#autocomplete-results div {
+    padding: 10px;
+    border: 1px solid #BDC3C7;
+    border-top: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#autocomplete-results div:hover {
+    background-color: #ECF0F1;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #FFFFFF;
+    margin-bottom: 40px;
+}
+
+thead {
+    background-color: #2C3E50;
+    color: #FFFFFF;
+}
+
+th, td {
+    padding: 10px 20px;
+    border-bottom: 1px solid #BDC3C7;
+    text-align: left;
+}
+
+/* Set the width for the book name column */
+th:first-child, td:first-child {
+    width: 20%;  /* Adjust this value based on your preference */
+    font: bold;
+}
+
+/* Apply hover effect only to tbody rows */
+tbody tr:hover {
+    background-color: #ECF0F1;
+}
+
+/* Utility */
+.mt-20 {
+    margin-top: 20px;
+}

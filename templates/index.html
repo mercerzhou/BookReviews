@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Book reviews</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<h1>Book reviews</h1>
+<p>We currently have {{ total_books }} books with {{ total_reviews }} reviews for you to explore.</p>
+
+<!-- Search Bar -->
+<div style="position: relative;">
+    <input type="text" name="query" id="search" placeholder="Search for book titles...">
+    <div id="autocomplete-results"></div>
+</div>
+
+<h2>Some reviews that you may be interested</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Book Name</th>
+            <th>Score</th>
+            <th>Review</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for review in latest_reviews %}
+            {% if review.title and review.score and review.review %}
+                <tr onclick="window.location='/book?title='+ {{encodeURIComponent(review.title)}} + '&id=' + {{ encodeURIComponent(review.id) }};">
+                    <td>{{ review.title }}</td>
+                    <td>{{ review.score }}</td>
+                    <td>{{ review.review }}</td>
+                </tr>
+            {% endif %}
+        {% endfor %}
+    </tbody>
+</table>
+
+</body>
+<script>
+    const searchInput = document.getElementById('search');
+    const resultsDiv = document.getElementById('autocomplete-results');
+
+    searchInput.addEventListener('input', function() {
+        // Clear previous results
+        resultsDiv.innerHTML = '';
+
+        // If the user has typed in something
+        if (searchInput.value.length > 0) {
+            fetch('/search_autocomplete?query=' + searchInput.value)
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(book => {
+                        const resultOption = document.createElement('div');
+                        resultOption.textContent = book.title;
+                        
+                        // When a resultOption is clicked, set the value of searchInput and redirect to the book page
+                        resultOption.addEventListener('click', function() {
+                            searchInput.value = book.title;  // set the input value to the clicked book title
+                            window.location.href = '/book?title=' + encodeURIComponent(book.title) + '&id=' + encodeURIComponent(book.id);  // redirect to the book page
+                        });
+                        
+                        resultsDiv.appendChild(resultOption);
+                    });
+                });
+        }
+    });
+
+    function addNewReviewToTop() {
+        fetch('/get_next_review')
+            .then(response => response.json())
+            .then(data => {
+                if (Object.keys(data).length !== 0) {
+                    // Create a new row
+                    const newRow = document.createElement('tr');
+                    newRow.onclick = function() {
+                        window.location = '/book?title=' + encodeURIComponent(data.title) + '&id=' + encodeURIComponent(data.id)
+                    };
+
+                    // Add the columns to the row
+                    const titleCell = document.createElement('td');
+                    titleCell.textContent = data.title;
+                    newRow.appendChild(titleCell);
+
+                    const scoreCell = document.createElement('td');
+                    scoreCell.textContent = data.score;
+                    newRow.appendChild(scoreCell);
+
+                    const reviewCell = document.createElement('td');
+                    reviewCell.textContent = data.review;
+                    newRow.appendChild(reviewCell);
+
+                    // Insert the new row at the top of the table body
+                    const tbody = document.querySelector('tbody');
+                    tbody.insertBefore(newRow, tbody.firstChild);
+                }
+            });
+    }
+
+    function addInitialReviews() {
+    fetch('/get_initial_reviews')
+        .then(response => response.json())
+        .then(data => {
+            data.forEach(review => {
+                // Create a new row
+                const newRow = document.createElement('tr');
+                newRow.onclick = function() {
+                    window.location = '/book?title=' + encodeURIComponent(review.title) + '&id=' + encodeURIComponent(review.id)
+                };
+
+                // Add the columns to the row
+                const titleCell = document.createElement('td');
+                titleCell.textContent = review.title;
+                newRow.appendChild(titleCell);
+
+                const scoreCell = document.createElement('td');
+                scoreCell.textContent = review.score;
+                newRow.appendChild(scoreCell);
+
+                const reviewCell = document.createElement('td');
+                reviewCell.textContent = review.review;
+                newRow.appendChild(reviewCell);
+
+                // Append the new row to the table body
+                const tbody = document.querySelector('tbody');
+                tbody.appendChild(newRow);
+            });
+        });
+    }
+
+
+    // Call the function once when the page loads
+    document.addEventListener("DOMContentLoaded", function() {
+        addInitialReviews();
+    });
+    // Call the function every 5 seconds
+    setInterval(addNewReviewToTop, 5000);
+</script>
+
+</html>

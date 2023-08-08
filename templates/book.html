@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ response.book_description.title }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .book-description {
+            background-color: #f4f4f4;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .book-reviews {
+            margin-bottom: 20px;
+        }
+        .book-reviews ul {
+            list-style-type: none;
+        }
+        .book-reviews li {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        .pagination-controls {
+            text-align: center;
+        }
+        .pagination-controls a {
+            background-color: #007BFF;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 5px;
+        }
+        .pagination-controls a:hover {
+            background-color: #0056b3;
+        }
+        .back-button {
+            display: inline-block;
+            background-color: #007BFF;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .back-button:hover {
+            background-color: #0056b3;
+        }
+
+    </style>
+    
+</head>
+<body>
+    <a href="/" class="back-button">Back to Home</a>
+
+    <!-- Book Description -->
+    <div class="book-description">
+        <h2>{{ response.book_description.title }}</h2>
+        <p>{{ response.book_description.description }}</p>
+        <p>Authors: {{ response.book_description.authors }}</p>
+    </div>
+
+    <!-- Book Reviews -->
+    <div class="book-reviews">
+        <h3>{{response.total_reviews}} Reviews Score:{{response.average_rating}}</h3>
+        <ul>
+            {% for review in response.book_reviews %}
+                <li>
+                    <strong>{{ review.profilename }}:</strong>
+                    <p>Score: {{ review.score }}</p>
+                    {% if review.review %}
+                        <p>Review: {{ review.review }}</p>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- Pagination Controls -->
+    <div class="pagination-controls">
+        {% if response.current_page > 1 %}
+            <a href="{{ url_for('book', title=response.book_description.title, page=response.current_page-1) }}" onclick="return checkPageBounds();">Previous</a>
+        {% endif %}
+        Page {{ response.current_page }} of {{ response.total_pages }}
+        {% if response.current_page < response.total_pages %}
+            <a href="{{ url_for('book', title=response.book_description.title, page=response.current_page+1) }}" onclick="return checkPageBounds();">Next</a>
+        {% endif %}
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        function checkPageBounds() {
+            let currentPage = {{ response.current_page }};
+            let totalPages = {{ response.total_pages }};
+            
+            if (currentPage <= 0 || currentPage > totalPages) {
+                alert("Page out of bounds!");
+                return false;
+            }
+            return true;
+        }
+    </script>
+
+</body>
+</html>
