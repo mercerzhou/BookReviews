@@ -49,15 +49,21 @@ MAX_BOOK_RATINGS_ID = 2999999
 
 def init_db():
     global db_connection
-    db_connection = psycopg2.connect(
-        dbname="postgres",
-        user="postgres",
-        password="postgres",
-        host="book-db1.cwxo48b9errn.us-east-1.rds.amazonaws.com",
-        port="5432"
-    )
+    try:
+        db_connection = psycopg2.connect(
+            dbname="postgres",
+            user="postgres",
+            password="postgres",
+            host="book-db1.cwxo48b9errn.us-east-1.rds.amazonaws.com",
+            port="5432"
+        )
+    except Exception as e:
+        print(f"Error while connecting to the database: {e}")
 
 def execute_query(query, parameters=None):
+    global db_connection
+    if db_connection is None or db_connection.closed:
+        init_db()
     with db_connection.cursor() as cursor:
         if parameters:
             cursor.execute(query, parameters)
