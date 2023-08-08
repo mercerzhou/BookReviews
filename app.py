@@ -243,4 +243,4 @@ def fetch_initial_reviews():
 if __name__ == '__main__':
     init_db()
     fetch_initial_reviews()
-    app.run(debug=True)
+    app.run(debug=False)
